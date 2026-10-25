@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Bautizo - Invitación Especial</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Great+Vibes&family=Montserrat:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            100: '#fdfbf7',
+                            200: '#f7eddc',
+                            300: '#e7ce9e',
+                            400: '#d4af37',
+                            500: '#c59b27',
+                            600: '#a37c1e',
+                        },
+                        cream: '#faf8f5',
+                        darkBg: '#0f172a',
+                        darkCard: '#1e293b',
+                    },
+                    fontFamily: {
+                        script: ['Great Vibes', 'cursive'],
+                        serif: ['Cinzel', 'serif'],
+                        sans: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 25%, #b38728 50%, #fbf5b7 75%, #aa771c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .bg-soft-pattern {
+            background-color: #faf8f5;
+            background-image: radial-gradient(#d4af37 0.5px, transparent 0.5px), radial-gradient(#d4af37 0.5px, #faf8f5 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+
+        .dark .bg-soft-pattern {
+            background-color: #0f172a;
+            background-image: radial-gradient(#d4af37 0.4px, transparent 0.4px), radial-gradient(#d4af37 0.4px, #0f172a 0.4px);
+        }
+
+        /* Soundwave Animation */
+        @keyframes soundWave {
+
+            0%,
+            100% {
+                height: 4px;
+            }
+
+            50% {
+                height: 16px;
+            }
+        }
+
+        .animate-wave-1 {
+            animation: soundWave 1.2s ease-in-out infinite;
+        }
+
+        .animate-wave-2 {
+            animation: soundWave 0.8s ease-in-out infinite 0.2s;
+        }
+
+        .animate-wave-3 {
+            animation: soundWave 1s ease-in-out infinite 0.4s;
+        }
+    </style>
+</head>
+
+<body
+    class="font-sans bg-cream dark:bg-darkBg text-gray-700 dark:text-gray-200 antialiased leading-relaxed transition-colors duration-300">
+
+    <!-- INITIAL AUDIO BANNER / TOAST -->
+    <div id="audioStartBanner" onclick="startAudioExplicitly()"
+        class="fixed top-16 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-md bg-gold-500 text-white px-4 py-2.5 rounded-full shadow-2xl flex items-center justify-between gap-3 text-xs font-semibold cursor-pointer border border-gold-300 animate-bounce">
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-music text-base"></i>
+            <span>Toca para activar la música de fondo 🎵</span>
+        </div>
+        <span class="bg-white/20 px-2 py-0.5 rounded-full text-[10px] uppercase">Activar</span>
+    </div>
+
+    <!-- HIDDEN YOUTUBE PLAYER CONTAINER -->
+    <div id="youtubeAudioContainer"
+        class="hidden fixed bottom-20 right-5 z-40 bg-white dark:bg-darkCard p-2 rounded-2xl shadow-xl border border-gold-300">
+        <div class="flex justify-between items-center mb-1 px-1">
+            <span class="text-[10px] font-semibold text-gold-600 dark:text-gold-300">Christina Perri - A Thousand
+                Years</span>
+            <button onclick="toggleYouTubeVideoModal()" class="text-xs text-gray-400 hover:text-gray-600"><i
+                    class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="w-64 h-36 rounded-lg overflow-hidden">
+            <div id="ytplayer"></div>
+        </div>
+    </div>
+
+    <!-- FLOATING MUSIC PLAYER BUTTON -->
+    <div class="fixed bottom-5 right-5 z-50 flex items-center gap-2">
+        <button id="musicToggleBtn" onclick="toggleAudio()"
+            class="relative group w-12 h-12 rounded-full bg-gradient-to-tr from-gold-500 to-gold-300 text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center border-2 border-white dark:border-gray-800">
+
+            <div id="musicWaves"
+                class="hidden absolute -top-1 -right-1 flex items-end gap-0.5 bg-gold-600 p-1 rounded-full border border-white">
+                <span class="w-0.5 bg-white rounded-full animate-wave-1"></span>
+                <span class="w-0.5 bg-white rounded-full animate-wave-2"></span>
+                <span class="w-0.5 bg-white rounded-full animate-wave-3"></span>
+            </div>
+
+            <i id="musicIcon" class="fa-solid fa-music text-base"></i>
+        </button>
+    </div>
+
+    <!-- STICKY NAVIGATION BAR -->
+    <nav
+        class="fixed top-0 left-0 right-0 z-40 bg-white/90 dark:bg-darkBg/90 backdrop-blur-md border-b border-gold-200/50 dark:border-gold-500/20 shadow-sm transition-all duration-300">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <span class="font-serif font-bold text-gold-500 text-lg">Mi Bautizo</span>
+            <div class="flex items-center space-x-2 sm:space-x-3 text-xs sm:text-sm">
+                <a href="#detalles" class="hover:text-gold-500 font-medium transition-colors">Eventos</a>
+                <a href="#confirmar"
+                    class="bg-gold-400 hover:bg-gold-500 text-white px-3 py-1.5 rounded-full font-medium transition-all shadow-sm">Confirmar</a>
+
+                <!-- DARK MODE TOGGLE BUTTON -->
+                <button onclick="toggleDarkMode()"
+                    class="p-2 rounded-full text-gold-600 dark:text-gold-300 hover:bg-gold-100 dark:hover:bg-gray-800 transition-colors"
+                    title="Cambiar modo claro/oscuro">
+                    <i id="themeIcon" class="fa-solid fa-moon text-sm"></i>
+                </button>
+
+                <button onclick="openAdminAuth()"
+                    class="text-gray-500 dark:text-gray-400 hover:text-gold-600 p-1.5 rounded-full border border-gray-200 dark:border-gray-700 transition-all flex items-center gap-1 px-2.5"
+                    title="Panel de Anfitrión">
+                    <i class="fa-solid fa-lock text-xs"></i>
+                    <span class="text-xs font-semibold hidden sm:inline">Admin</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CARD CONTAINER -->
+    <div
+        class="max-w-2xl mx-auto bg-white dark:bg-darkCard shadow-xl min-h-screen my-0 sm:my-6 sm:rounded-3xl overflow-hidden border border-gold-200/40 dark:border-gold-500/20 relative transition-colors duration-300">
+
+        <!-- HERO SECTION -->
+        <header
+            class="relative text-center px-6 pt-24 pb-16 bg-gradient-to-b from-gold-100/50 via-white to-cream dark:from-slate-900 dark:via-darkCard dark:to-darkBg transition-colors">
+            <div class="mb-4 inline-block relative">
+                <div
+                    class="w-16 h-16 rounded-full bg-gold-100 dark:bg-slate-800 flex items-center justify-center mx-auto border border-gold-300 dark:border-gold-500/40 shadow-inner">
+                    <i class="fa-solid fa-cross text-2xl text-gold-500"></i>
+                </div>
+            </div>
+
+            <p class="font-serif tracking-widest uppercase text-xs text-gold-600 dark:text-gold-400 font-semibold mb-2">
+                Nos complace invitarte a celebrar</p>
+            <h1 class="font-serif text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-100 mb-1">El Bautizo de
+            </h1>
+            <h2 class="font-script text-5xl sm:text-6xl gold-gradient-text my-2 py-1">Mateo Alexander</h2>
+
+            <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto italic mt-3 mb-6">
+                "Señor, protege a este niño con Tu amor divino y guía cada uno de sus pasos en la luz de Tu fe."
+            </p>
+
+            <div
+                class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-full border border-gold-300 dark:border-gold-500/30 shadow-sm text-gray-700 dark:text-gray-200 font-medium text-sm mb-8">
+                <i class="fa-regular fa-calendar-check text-gold-500"></i>
+                <span>Sábado, 15 de Noviembre de 2026</span>
+            </div>
+
+            <!-- COUNTDOWN TIMER -->
+            <div
+                class="bg-white/80 dark:bg-slate-800/80 backdrop-blur border border-gold-200 dark:border-gold-500/30 rounded-2xl p-4 shadow-sm max-w-md mx-auto">
+                <p class="text-xs font-serif uppercase tracking-wider text-gray-400 dark:text-gray-400 mb-3">Faltan tan
+                    solo:</p>
+                <div class="grid grid-cols-4 gap-2 text-center" id="countdown">
+                    <div class="bg-gold-100/60 dark:bg-slate-700/60 p-2 rounded-lg">
+                        <span id="days"
+                            class="block font-serif text-xl sm:text-2xl font-bold text-gold-600 dark:text-gold-400">00</span>
+                        <span class="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400">Días</span>
+                    </div>
+                    <div class="bg-gold-100/60 dark:bg-slate-700/60 p-2 rounded-lg">
+                        <span id="hours"
+                            class="block font-serif text-xl sm:text-2xl font-bold text-gold-600 dark:text-gold-400">00</span>
+                        <span class="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400">Horas</span>
+                    </div>
+                    <div class="bg-gold-100/60 dark:bg-slate-700/60 p-2 rounded-lg">
+                        <span id="minutes"
+                            class="block font-serif text-xl sm:text-2xl font-bold text-gold-600 dark:text-gold-400">00</span>
+                        <span class="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400">Min</span>
+                    </div>
+                    <div class="bg-gold-100/60 dark:bg-slate-700/60 p-2 rounded-lg">
+                        <span id="seconds"
+                            class="block font-serif text-xl sm:text-2xl font-bold text-gold-600 dark:text-gold-400">00</span>
+                        <span class="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400">Seg</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <hr class="border-t border-gold-200/60 dark:border-gold-500/20 max-w-xs mx-auto">
+
+        <!-- PARENTS & GODPARENTS -->
+        <section id="padrinos" class="py-12 px-6 bg-cream/40 dark:bg-slate-900/40 text-center">
+            <div class="max-w-md mx-auto space-y-8">
+                <div>
+                    <div class="inline-block p-2 rounded-full bg-gold-100 dark:bg-slate-800 text-gold-500 mb-2">
+                        <i class="fa-solid fa-heart text-sm"></i>
+                    </div>
+                    <h3 class="font-serif text-lg font-bold text-gray-800 dark:text-gray-100 uppercase tracking-wide">
+                        Mis Padres</h3>
+                    <p class="font-script text-2xl text-gold-600 dark:text-gold-400 mt-1">Carlos Mendoza & Sofia Ramirez
+                    </p>
+                </div>
+
+                <div>
+                    <div class="inline-block p-2 rounded-full bg-gold-100 dark:bg-slate-800 text-gold-500 mb-2">
+                        <i class="fa-solid fa-hands-holding-child text-sm"></i>
+                    </div>
+                    <h3 class="font-serif text-lg font-bold text-gray-800 dark:text-gray-100 uppercase tracking-wide">
+                        Mis Padrinos</h3>
+                    <p class="font-script text-2xl text-gold-600 dark:text-gold-400 mt-1">Alejandro Mendoza & Elena
+                        Torres</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="border-t border-gold-200/60 dark:border-gold-500/20 max-w-xs mx-auto">
+
+        <!-- DETAILS (CEREMONY & RECEPTION) -->
+        <section id="detalles" class="py-12 px-6">
+            <div class="text-center mb-8">
+                <span
+                    class="font-serif text-xs uppercase tracking-widest text-gold-600 dark:text-gold-400 font-semibold">Ubicación
+                    y Horarios</span>
+                <h3 class="font-serif text-2xl font-bold text-gray-800 dark:text-gray-100">¿Dónde y Cuándo?</h3>
+            </div>
+
+            <div class="space-y-6 max-w-md mx-auto">
+                <!-- Ceremony Card -->
+                <div
+                    class="bg-white dark:bg-slate-800 border border-gold-200 dark:border-gold-500/30 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
+                    <div class="flex items-start gap-4">
+                        <div class="p-3 bg-gold-100 dark:bg-slate-700 text-gold-600 dark:text-gold-400 rounded-xl">
+                            <i class="fa-solid fa-church text-2xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <span
+                                class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gold-100 dark:bg-slate-700 text-gold-700 dark:text-gold-300 mb-1">Misa
+                                de Bautizo</span>
+                            <h4 class="font-serif font-bold text-gray-800 dark:text-gray-100 text-lg">Parroquia San
+                                Miguel Arcángel</h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1"><i
+                                    class="fa-regular fa-clock text-gold-500 mr-1"></i> 12:00 PM</p>
+                            <p class="text-xs text-gray-600 dark:text-gray-300 mt-1"><i
+                                    class="fa-solid fa-location-dot text-gold-500 mr-1"></i> Av. Principal #123, Col.
+                                Centro</p>
+
+                            <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer"
+                                class="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-white dark:bg-slate-700 border border-gold-300 dark:border-gold-500/40 hover:bg-gold-50 dark:hover:bg-slate-600 text-gold-700 dark:text-gold-300 rounded-lg text-xs font-semibold transition-colors">
+                                <i class="fa-solid fa-map-location-dot"></i> Ver en Google Maps
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reception Card -->
+                <div
+                    class="bg-white dark:bg-slate-800 border border-gold-200 dark:border-gold-500/30 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
+                    <div class="flex items-start gap-4">
+                        <div class="p-3 bg-gold-100 dark:bg-slate-700 text-gold-600 dark:text-gold-400 rounded-xl">
+                            <i class="fa-solid fa-utensils text-2xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <span
+                                class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gold-100 dark:bg-slate-700 text-gold-700 dark:text-gold-300 mb-1">Recepción
+                                / Festejo</span>
+                            <h4 class="font-serif font-bold text-gray-800 dark:text-gray-100 text-lg">Jardín de Eventos
+                                Las Palmas</h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1"><i
+                                    class="fa-regular fa-clock text-gold-500 mr-1"></i> 02:00 PM</p>
+                            <p class="text-xs text-gray-600 dark:text-gray-300 mt-1"><i
+                                    class="fa-solid fa-location-dot text-gold-500 mr-1"></i> Calle Los Olivos #456,
+                                Valle Verde</p>
+
+                            <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer"
+                                class="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-white dark:bg-slate-700 border border-gold-300 dark:border-gold-500/40 hover:bg-gold-50 dark:hover:bg-slate-600 text-gold-700 dark:text-gold-300 rounded-lg text-xs font-semibold transition-colors">
+                                <i class="fa-solid fa-map-location-dot"></i> Ver en Google Maps
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RSVP FORM SECTION -->
+        <section id="confirmar" class="py-12 px-6 bg-cream/30 dark:bg-slate-900/40">
+            <div class="text-center mb-8">
+                <span
+                    class="font-serif text-xs uppercase tracking-widest text-gold-600 dark:text-gold-400 font-semibold">Acompañanos</span>
+                <h3 class="font-serif text-2xl font-bold text-gray-800 dark:text-gray-100">Confirmación de Asistencia
+                </h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Por favor confirma tu respuesta antes del 1 de
+                    Noviembre</p>
+            </div>
+
+            <form id="rsvpForm" onsubmit="handleRSVPSubmit(event)"
+                class="max-w-md mx-auto space-y-4 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-gold-200 dark:border-gold-500/30 shadow-sm">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Nombre completo
+                        *</label>
+                    <input type="text" id="guestName" required placeholder="Ej. Familia Rodríguez o Juan Pérez"
+                        class="w-full px-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-white focus:border-gold-400 outline-none text-sm transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">¿Asistirás al
+                        evento? *</label>
+                    <select id="attendanceStatus" required onchange="togglePassesInput()"
+                        class="w-full px-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-white focus:border-gold-400 outline-none text-sm transition-all">
+                        <option value="attending">¡Sí, ahí estaré! 🎉</option>
+                        <option value="declined">Lo siento, no podré asistir 😔</option>
+                    </select>
+                </div>
+
+                <div id="passesContainer">
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Número de personas
+                        / boletos *</label>
+                    <select id="guestCount"
+                        class="w-full px-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-white focus:border-gold-400 outline-none text-sm transition-all">
+                        <option value="1">1 Persona</option>
+                        <option value="2" selected>2 Personas</option>
+                        <option value="3">3 Personas</option>
+                        <option value="4">4 Personas</option>
+                        <option value="5">5 Personas</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Mensaje para Mateo
+                        y sus padres (Opcional)</label>
+                    <textarea id="guestMessage" rows="3" placeholder="Escribe unas palabras de bendición..."
+                        class="w-full px-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-white focus:border-gold-400 outline-none text-sm transition-all resize-none"></textarea>
+                </div>
+
+                <button type="submit"
+                    class="w-full py-3 px-4 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all text-sm flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    <span>Confirmar por WhatsApp</span>
+                </button>
+            </form>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="py-8 px-6 text-center bg-gray-900 text-white">
+            <p class="font-script text-3xl text-gold-300 mb-1">Mateo Alexander</p>
+            <p class="text-[11px] text-gray-400">Esperamos contar con tu valiosa presencia.</p>
+            <div class="mt-4 pt-4 border-t border-gray-800 flex items-center justify-between text-[10px] text-gray-500">
+                <span>Mi Bautizo © 2026</span>
+                <button onclick="openAdminAuth()" class="hover:text-gold-300 underline flex items-center gap-1">
+                    <i class="fa-solid fa-lock text-[9px]"></i> Panel Anfitrión
+                </button>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- PASSWORD AUTH MODAL -->
+    <div id="authModal"
+        class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white dark:bg-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-gold-200 dark:border-gold-500/30 text-center relative">
+            <div
+                class="w-12 h-12 rounded-full bg-gold-100 dark:bg-slate-700 text-gold-600 dark:text-gold-400 flex items-center justify-center mx-auto mb-3">
+                <i class="fa-solid fa-shield-halved text-xl"></i>
+            </div>
+            <h3 class="font-serif font-bold text-gray-800 dark:text-gray-100 text-lg">Acceso Anfitrión</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-4">Ingresa la contraseña para administrar
+                invitados</p>
+
+            <form onsubmit="verifyAdminPassword(event)" class="space-y-3">
+                <input type="password" id="adminPasswordInput" placeholder="Contraseña de acceso" required
+                    class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-slate-700 dark:text-white outline-none text-sm text-center">
+
+                <p id="authErrorMessage" class="hidden text-xs text-red-500 font-medium">Contraseña incorrecta.</p>
+                <div class="bg-gold-50 dark:bg-slate-700 p-2 rounded-lg text-[11px] text-gold-700 dark:text-gold-300">
+                    💡 Contraseña por defecto: <span class="font-mono font-bold select-all">no pongo contraseñas
+                        XD</span>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeAdminAuth()"
+                        class="w-1/2 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl text-xs font-semibold">Cancelar</button>
+                    <button type="submit"
+                        class="w-1/2 py-2.5 bg-gold-500 hover:bg-gold-600 text-white rounded-xl text-xs font-semibold shadow-md">Ingresar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- HOST / ADMIN MODAL -->
+    <div id="adminModal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white dark:bg-slate-800 rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-gold-200 dark:border-gold-500/30 overflow-hidden">
+            <div
+                class="p-5 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-cream/50 dark:bg-slate-900/50">
+                <div class="flex items-center gap-2">
+                    <div
+                        class="w-8 h-8 rounded-full bg-gold-100 dark:bg-slate-700 text-gold-600 dark:text-gold-400 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-clipboard-user"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-serif font-bold text-gray-800 dark:text-gray-100 text-lg">Panel de
+                            Confirmaciones</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Gestión de la lista de invitados</p>
+                    </div>
+                </div>
+                <button onclick="toggleAdminModal()"
+                    class="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Stats -->
+            <div
+                class="p-4 grid grid-cols-3 gap-3 bg-gold-50/30 dark:bg-slate-900/30 border-b border-gray-100 dark:border-gray-700 text-center">
+                <div
+                    class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-gold-200/60 dark:border-gold-500/20">
+                    <span class="block text-[10px] uppercase font-semibold text-gray-400">Asistirán</span>
+                    <span id="statAttending" class="text-xl font-bold text-green-600 dark:text-green-400">0</span>
+                    <span id="statPasses" class="text-[10px] text-gray-500 dark:text-gray-400 block font-medium">(0
+                        personas)</span>
+                </div>
+                <div
+                    class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-gold-200/60 dark:border-gold-500/20">
+                    <span class="block text-[10px] uppercase font-semibold text-gray-400">No Asistirán</span>
+                    <span id="statDeclined" class="text-xl font-bold text-red-500 dark:text-red-400">0</span>
+                </div>
+                <div
+                    class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-gold-200/60 dark:border-gold-500/20">
+                    <span class="block text-[10px] uppercase font-semibold text-gray-400">Total Respuestas</span>
+                    <span id="statTotal" class="text-xl font-bold text-gold-600 dark:text-gold-400">0</span>
+                </div>
+            </div>
+
+            <!-- Search & Actions -->
+            <div class="p-4 border-b border-gray-100 dark:border-gray-700 space-y-3">
+                <input type="text" id="guestSearchInput" oninput="renderGuestList()" placeholder="Buscar por nombre..."
+                    class="w-full px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white text-xs outline-none">
+
+                <div class="flex justify-between items-center text-xs">
+                    <div class="flex gap-1 bg-gray-100 dark:bg-slate-700 p-1 rounded-xl">
+                        <button onclick="filterGuests('all')" id="btnFilterAll"
+                            class="px-3 py-1 rounded-lg font-medium bg-white dark:bg-slate-600 text-gray-800 dark:text-white">Todos</button>
+                        <button onclick="filterGuests('attending')" id="btnFilterAttending"
+                            class="px-3 py-1 rounded-lg font-medium text-gray-600 dark:text-gray-300">Van</button>
+                        <button onclick="filterGuests('declined')" id="btnFilterDeclined"
+                            class="px-3 py-1 rounded-lg font-medium text-gray-600 dark:text-gray-300">No van</button>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="exportGuestsCSV()"
+                            class="px-2.5 py-1 bg-green-50 dark:bg-green-900/40 text-green-700 dark:text-green-300 rounded-lg font-medium">Exportar</button>
+                        <button onclick="loadSampleData()"
+                            class="px-2.5 py-1 bg-gold-100 dark:bg-gold-900/40 text-gold-700 dark:text-gold-300 rounded-lg font-medium">+
+                            Ejemplo</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Guest Container -->
+            <div class="p-4 overflow-y-auto flex-1 space-y-3" id="guestListContainer"></div>
+
+            <div class="p-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-slate-900 text-right">
+                <button onclick="toggleAdminModal()"
+                    class="px-4 py-2 bg-gray-800 text-white rounded-xl text-xs font-medium">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- YOUTUBE IFRAME API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script>
+        const HOST_PHONE_NUMBER = "5215512345678";
+        const ADMIN_PASSWORD = "Bautizo2026?";
+        const EVENT_DATE = new Date('2026-11-15T12:00:00').getTime();
+
+        let ytPlayer;
+        let isYtReady = false;
+        let isPlaying = false;
+        let currentFilter = 'all';
+
+        // DARK MODE TOGGLE & PREFERENCE
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('themeIcon').className = "fa-solid fa-sun text-sm";
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('themeIcon').className = "fa-solid fa-moon text-sm";
+            }
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.getElementById('themeIcon').className = isDark ? "fa-solid fa-sun text-sm" : "fa-solid fa-moon text-sm";
+        }
+
+        initTheme();
+
+        // YOUTUBE API
+        function onYouTubeIframeAPIReady() {
+            ytPlayer = new YT.Player('ytplayer', {
+                height: '100%',
+                width: '100%',
+                videoId: 'QgaTQ5-XfMM',
+                playerVars: {
+                    'playsinline': 1,
+                    'controls': 1,
+                    'autoplay': 0,
+                    'loop': 1,
+                    'playlist': 'QgaTQ5-XfMM'
+                },
+                events: {
+                    'onReady': () => { isYtReady = true; },
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerStateChange(event) {
+            const musicIcon = document.getElementById('musicIcon');
+            const musicWaves = document.getElementById('musicWaves');
+            const banner = document.getElementById('audioStartBanner');
+
+            if (event.data == YT.PlayerState.PLAYING) {
+                isPlaying = true;
+                musicIcon.className = "fa-solid fa-pause text-base";
+                musicWaves.classList.remove('hidden');
+                if (banner) banner.style.display = 'none';
+            } else {
+                isPlaying = false;
+                musicIcon.className = "fa-solid fa-music text-base";
+                musicWaves.classList.add('hidden');
+            }
+        }
+
+        function startAudioExplicitly() {
+            if (isYtReady && ytPlayer) {
+                ytPlayer.playVideo();
+            }
+            const banner = document.getElementById('audioStartBanner');
+            if (banner) banner.style.display = 'none';
+        }
+
+        function toggleAudio() {
+            if (!isYtReady) return;
+            if (isPlaying) {
+                ytPlayer.pauseVideo();
+            } else {
+                ytPlayer.playVideo();
+            }
+        }
+
+        function toggleYouTubeVideoModal() {
+            document.getElementById('youtubeAudioContainer').classList.toggle('hidden');
+        }
+
+        // COUNTDOWN
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = EVENT_DATE - now;
+
+            if (distance < 0) {
+                document.getElementById('countdown').innerHTML = "<div class='col-span-4 text-gold-600 font-bold'>¡Hoy es el gran día!</div>";
+                return;
+            }
+
+            document.getElementById('days').innerText = String(Math.floor(distance / (1000 * 60 * 60 * 24))).padStart(2, '0');
+            document.getElementById('hours').innerText = String(Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+            document.getElementById('minutes').innerText = String(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+            document.getElementById('seconds').innerText = String(Math.floor((distance % (1000 * 60)) / 1000)).padStart(2, '0');
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        function togglePassesInput() {
+            const status = document.getElementById('attendanceStatus').value;
+            const passesContainer = document.getElementById('passesContainer');
+            if (status === 'declined') {
+                passesContainer.classList.add('opacity-40', 'pointer-events-none');
+            } else {
+                passesContainer.classList.remove('opacity-40', 'pointer-events-none');
+            }
+        }
+
+        function handleRSVPSubmit(event) {
+            event.preventDefault();
+            const name = document.getElementById('guestName').value.trim();
+            const status = document.getElementById('attendanceStatus').value;
+            const count = parseInt(document.getElementById('guestCount').value);
+            const message = document.getElementById('guestMessage').value.trim();
+
+            if (!name) return;
+
+            const newGuest = {
+                id: Date.now(),
+                name, status, count: status === 'attending' ? count : 0, message,
+                date: new Date().toLocaleDateString('es-ES', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+            };
+
+            const guests = getStoredGuests();
+            guests.unshift(newGuest);
+            localStorage.setItem('bautizo_guest_list', JSON.stringify(guests));
+
+            let whatsappText = status === 'attending'
+                ? `¡Hola! Confirmo mi asistencia para el bautizo de *Mateo Alexander* 🕊️\n👤 *De:* ${name}\n🎟️ *Boletos:* ${count}\n`
+                : `¡Hola! Agradezco la invitación al bautizo de *Mateo Alexander*, pero no podré asistir 😔\n👤 *De:* ${name}\n`;
+
+            if (message) whatsappText += `💬 *Mensaje:* "${message}"\n`;
+
+            window.open(`https://wa.me/${HOST_PHONE_NUMBER}?text=${encodeURIComponent(whatsappText)}`, '_blank');
+            document.getElementById('rsvpForm').reset();
+        }
+
+        function openAdminAuth() {
+            document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('authErrorMessage').classList.add('hidden');
+            document.getElementById('authModal').classList.remove('hidden');
+        }
+
+        function closeAdminAuth() {
+            document.getElementById('authModal').classList.add('hidden');
+        }
+
+        function verifyAdminPassword(event) {
+            event.preventDefault();
+            if (document.getElementById('adminPasswordInput').value.trim() === ADMIN_PASSWORD) {
+                closeAdminAuth();
+                toggleAdminModal();
+            } else {
+                document.getElementById('authErrorMessage').classList.remove('hidden');
+            }
+        }
+
+        function getStoredGuests() {
+            const data = localStorage.getItem('bautizo_guest_list');
+            return data ? JSON.parse(data) : [];
+        }
+
+        function removeGuest(id) {
+            const guests = getStoredGuests().filter(g => g.id !== id);
+            localStorage.setItem('bautizo_guest_list', JSON.stringify(guests));
+            renderGuestList();
+        }
+
+        function loadSampleData() {
+            const samples = [
+                { id: 1, name: "Familia Mendoza", status: "attending", count: 4, message: "¡Súper felices de acompañarlos!", date: "10 Oct, 14:20" },
+                { id: 2, name: "Lucía Fernández", status: "declined", count: 0, message: "Les mando un abrazo grande.", date: "12 Oct, 18:40" }
+            ];
+            localStorage.setItem('bautizo_guest_list', JSON.stringify(samples));
+            renderGuestList();
+        }
+
+        function toggleAdminModal() {
+            const modal = document.getElementById('adminModal');
+            modal.classList.toggle('hidden');
+            if (!modal.classList.contains('hidden')) renderGuestList();
+        }
+
+        function filterGuests(type) {
+            currentFilter = type;
+            renderGuestList();
+        }
+
+        function renderGuestList() {
+            const guests = getStoredGuests();
+            const container = document.getElementById('guestListContainer');
+            const attendingList = guests.filter(g => g.status === 'attending');
+            const declinedList = guests.filter(g => g.status === 'declined');
+
+            document.getElementById('statAttending').innerText = attendingList.length;
+            document.getElementById('statPasses').innerText = `(${attendingList.reduce((acc, c) => acc + (c.count || 0), 0)} personas)`;
+            document.getElementById('statDeclined').innerText = declinedList.length;
+            document.getElementById('statTotal').innerText = guests.length;
+
+            let filtered = guests;
+            if (currentFilter === 'attending') filtered = attendingList;
+            if (currentFilter === 'declined') filtered = declinedList;
+
+            container.innerHTML = filtered.map(g => `
+                <div class="p-3.5 rounded-2xl border ${g.status === 'attending' ? 'border-green-200 bg-green-50/30 dark:bg-green-900/20' : 'border-red-200 bg-red-50/30 dark:bg-red-900/20'} flex flex-col gap-2">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="font-semibold text-gray-800 dark:text-gray-100 text-sm">${g.name}</span>
+                            <span class="ml-2 px-2 py-0.5 rounded-full text-[10px] font-semibold ${g.status === 'attending' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                                ${g.status === 'attending' ? `Confirmado (${g.count})` : 'Declinado'}
+                            </span>
+                        </div>
+                        <button onclick="removeGuest(${g.id})" class="text-gray-400 hover:text-red-500"><i class="fa-regular fa-trash-can text-xs"></i></button>
+                    </div>
+                    ${g.message ? `<p class="text-xs text-gray-600 dark:text-gray-300 italic bg-white/70 dark:bg-slate-700 p-2 rounded-xl">"${g.message}"</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function exportGuestsCSV() {
+            const guests = getStoredGuests();
+            if (guests.length === 0) return alert('No hay datos para exportar.');
+            let csv = "data:text/csv;charset=utf-8,Nombre,Estado,Boletos,Mensaje\n";
+            guests.forEach(g => {
+                csv += `"${g.name}","${g.status === 'attending' ? 'Confirmado' : 'Declinado'}",${g.count},"${g.message || ''}"\n`;
+            });
+            const link = document.createElement("a");
+            link.href = encodeURI(csv);
+            link.download = "invitados_bautizo.csv";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+
+</html>
